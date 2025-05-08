@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Interactive DOM Traversal and Manipulation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    header {
+      background-color: #f2f2f2;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+    }
+
+    .node {
+      padding: 10px;
+      margin: 5px;
+      border: 1px solid #aaa;
+      cursor: pointer;
+    }
+
+    .grandparent {
+      background-color: #d0e6ff;
+    }
+
+    .parent {
+      background-color: #e0ffd0;
+      margin-left: 20px;
+    }
+
+    .child {
+      background-color: #ffe0e0;
+      margin-left: 40px;
+    }
+
+    .highlight {
+      border: 3px solid #ff9900;
+    }
+
+    .controls {
+      margin: 20px 0;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 15px;
+      cursor: pointer;
+      border: none;
+      background-color: #1a73e8;
+      color: white;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background-color: #1558b0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <strong>Complete Name:</strong> Juan Dela Cruz<br>
+  <strong>Sex:</strong> Male<br>
+  <strong>Address:</strong> Sample Address, City<br>
+  <strong>Course, Year, and Section:</strong> BSIT 3-A<br>
+  <strong>Name of School:</strong> Sample University<br>
+  <strong>Semester and Academic Year:</strong> 2nd Sem, A.Y. 2024-2025<br>
+  <strong>Subject Code and Title:</strong> IT 303 - Web Systems and Technologies<br>
+  <strong>Name of Subject Instructor:</strong> Engr. Maria Santos
+</header>
+
+<div id="dom-tree">
+  <div class="node grandparent">Grandparent
+    <div class="node parent">Parent 1
+      <div class="node child">Child 1.1</div>
+      <div class="node child">Child 1.2</div>
+    </div>
+    <div class="node parent">Parent 2
+      <div class="node child">Child 2.1</div>
+      <div class="node child">Child 2.2</div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button onclick="traverseDown()">Traverse Down</button>
+  <button onclick="traverseUp()">Traverse Up</button>
+  <button onclick="traverseNext()">Next Sibling</button>
+  <button onclick="traversePrevious()">Previous Sibling</button>
+  <button onclick="addChild()">Add Child</button>
+  <button onclick="deleteNode()">Delete Current</button>
+  <button onclick="goBack()">Go Back</button>
+</div>
+
+<script>
+  let selectedNode = null;
+
+  function selectNode(node) {
+    if (selectedNode) {
+      selectedNode.classList.remove("highlight");
+    }
+    selectedNode = node;
+    selectedNode.classList.add("highlight");
+  }
+
+  document.querySelectorAll('.node').forEach(node => {
+    node.addEventListener('click', function (e) {
+      e.stopPropagation();
+      selectNode(this);
+    });
+  });
+
+  function traverseDown() {
+    if (!selectedNode) return;
+    const child = Array.from(selectedNode.children).find(c => c.classList.contains('node'));
+    if (child) selectNode(child);
+  }
+
+  function traverseUp() {
+    if (!selectedNode) return;
+    const parent = selectedNode.parentElement.closest('.node');
+    if (parent) selectNode(parent);
+  }
+
+  function traverseNext() {
+    if (!selectedNode) return;
+    let next = selectedNode.nextElementSibling;
+    while (next && !next.classList.contains('node')) {
+      next = next.nextElementSibling;
+    }
+    if (next) selectNode(next);
+  }
+
+  function traversePrevious() {
+    if (!selectedNode) return;
+    let prev = selectedNode.previousElementSibling;
+    while (prev && !prev.classList.contains('node')) {
+      prev = prev.previousElementSibling;
+    }
+    if (prev) selectNode(prev);
+  }
+
+  function addChild() {
+    if (!selectedNode) return;
+
+    if (selectedNode.classList.contains('grandparent')) {
+      const newParent = document.createElement('div');
+      newParent.className = 'node parent';
+      newParent.textContent = 'New Parent';
+
+      const child1 = document.createElement('div');
+      child1.className = 'node child';
+      child1.textContent = 'New Child 1';
+
+      const child2 = document.createElement('div');
+      child2.className = 'node child';
+      child2.textContent = 'New Child 2';
+
+      newParent.appendChild(child1);
+      newParent.appendChild(child2);
+      selectedNode.appendChild(newParent);
+
+      [newParent, child1, child2].forEach(n => {
+        n.addEventListener('click', function (e) {
+          e.stopPropagation();
+          selectNode(this);
+        });
+      });
+    } else if (selectedNode.classList.contains('parent')) {
+      const newChild = document.createElement('div');
+      newChild.className = 'node child';
+      newChild.textContent = 'New Child';
+      newChild.addEventListener('click', function (e) {
+        e.stopPropagation();
+        selectNode(this);
+      });
+      selectedNode.appendChild(newChild);
+    } else {
+      alert("Cannot add child to a child node.");
+    }
+  }
+
+  function deleteNode() {
+    if (!selectedNode) return;
+    if (selectedNode.classList.contains('grandparent')) {
+      alert("Cannot delete the grandparent node.");
+      return;
+    }
+
+    const parent = selectedNode.parentElement;
+    parent.removeChild(selectedNode);
+    selectedNode = null;
+  }
+
+  function goBack() {
+    window.location.href = 'index.html';
+  }
+</script>
+
+</body>
+</html>
