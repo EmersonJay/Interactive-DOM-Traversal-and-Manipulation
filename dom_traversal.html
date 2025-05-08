@@ -77,12 +77,12 @@
 <div id="dom-tree">
   <div class="node grandparent">Grandparent
     <div class="node parent">Parent 1
-      <div class="node child">Child 1.1</div>
-      <div class="node child">Child 1.2</div>
+      <div class="node child">Child 1</div>
+      <div class="node child">Child 2</div>
     </div>
     <div class="node parent">Parent 2
-      <div class="node child">Child 2.1</div>
-      <div class="node child">Child 2.2</div>
+      <div class="node child">Child 3</div>
+      <div class="node child">Child 4</div>
     </div>
   </div>
 </div>
@@ -99,6 +99,7 @@
 
 <script>
   let selectedNode = null;
+  let childCount = 1;  // Global counter for children numbering
 
   function selectNode(node) {
     if (selectedNode) {
@@ -155,11 +156,11 @@
 
       const child1 = document.createElement('div');
       child1.className = 'node child';
-      child1.textContent = 'New Child 1';
+      child1.textContent = `Child ${childCount++}`;
 
       const child2 = document.createElement('div');
       child2.className = 'node child';
-      child2.textContent = 'New Child 2';
+      child2.textContent = `Child ${childCount++}`;
 
       newParent.appendChild(child1);
       newParent.appendChild(child2);
@@ -174,7 +175,7 @@
     } else if (selectedNode.classList.contains('parent')) {
       const newChild = document.createElement('div');
       newChild.className = 'node child';
-      newChild.textContent = 'New Child';
+      newChild.textContent = `Child ${childCount++}`;
       newChild.addEventListener('click', function (e) {
         e.stopPropagation();
         selectNode(this);
